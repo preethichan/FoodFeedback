@@ -1,5 +1,5 @@
 # config.py
 
 class Config:
-    MONGO_URI = "mongodb://localhost:27017/Restaurant_feedback"
+    MONGO_URI = "mongodb://host.docker.internal:27017/Restaurant_feedback"
 

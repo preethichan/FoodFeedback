@@ -5,7 +5,7 @@ from bson.objectid import ObjectId
 from typing import List
 from models import RestaurantFeedback
 from config import Config
-from fastapi.responses import FileResponse
+from fastapi.responses import HTMLResponse, FileResponse
 import os
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -23,9 +23,12 @@ app.add_middleware(
 )
 
 
-@app.get("/")
-async def root():
-    return {"message": "Welcome to the Restaurant Feedback API!"}
+# Serve the HTML file (index.html) as the frontend
+@app.get("/", response_class=HTMLResponse)
+async def get_index():
+    # Assuming index.html is located directly in the restaurant_feedback directory
+    html_file_path = os.path.join(os.getcwd(), "index.html")
+    return FileResponse(html_file_path)
 
 @app.get("/favicon.ico")
 async def favicon():
