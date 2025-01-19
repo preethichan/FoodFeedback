@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Restaurant Feedback</title>
+  <!-- Add Bootstrap CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light d-flex justify-content-center align-items-center min-vh-100">
+
+  <!-- Feedback Form -->
+  <div class="w-100 max-w-lg p-5 bg-white shadow rounded">
+    <h2 class="h3 mb-4 text-center">Restaurant Feedback</h2>
+    
+    <form id="contact-form" action="#" method="POST">
+      <!-- Restaurant Name -->
+      <div class="mb-4">
+        <label for="restaurant-name" class="form-label">Restaurant Name</label>
+        <input type="text" id="restaurant-name" name="restaurant-name" required 
+          class="form-control">
+      </div>
+
+      <!-- City -->
+      <div class="mb-4">
+        <label for="city" class="form-label">City</label>
+        <input type="text" id="city" name="city" required 
+          class="form-control">
+      </div>
+
+      <!-- Food 1 -->
+      <div class="mb-4">
+        <h3 class="h5">Food 1</h3>
+        <label for="food1-name" class="form-label">Food Name</label>
+        <input type="text" id="food1-name" name="food1-name" required 
+          class="form-control">
+        
+        <label for="food1-comment" class="form-label mt-3">Comment</label>
+        <textarea id="food1-comment" name="food1-comment" rows="3" required 
+          class="form-control"></textarea>
+
+        <label for="food1-review" class="form-label mt-3">Review</label>
+        <select id="food1-review" name="food1-review" required 
+          class="form-select">
+          <option value="0">None</option>
+          <option value="1">1 Star</option>
+          <option value="2">2 Stars</option>
+          <option value="3">3 Stars</option>
+          <option value="4">4 Stars</option>
+          <option value="5">5 Stars</option>
+        </select>
+      </div>
+      
+      <!-- Food 2 -->
+      <div class="mb-4">
+        <h3 class="h5">Food 2</h3>
+        <label for="food2-name" class="form-label">Food Name</label>
+        <input type="text" id="food2-name" name="food2-name"  
+          class="form-control">
+        
+        <label for="food2-comment" class="form-label mt-3">Comment</label>
+        <textarea id="food2-comment" name="food2-comment" rows="3" 
+          class="form-control"></textarea>
+
+        <label for="food2-review" class="form-label mt-3">Review</label>
+        <select id="food2-review" name="food2-review" 
+          class="form-select">
+          <option value="0">None</option>
+          <option value="1">1 Star</option>
+          <option value="2">2 Stars</option>
+          <option value="3">3 Stars</option>
+          <option value="4">4 Stars</option>
+          <option value="5">5 Stars</option>
+        </select>
+      </div>
+
+      <!-- Food 3 -->
+      <div class="mb-4">
+        <h3 class="h5">Food 3</h3>
+        <label for="food3-name" class="form-label">Food Name</label>
+        <input type="text" id="food3-name" name="food3-name" 
+          class="form-control">
+        
+        <label for="food3-comment" class="form-label mt-3">Comment</label>
+        <textarea id="food3-comment" name="food3-comment" rows="3" 
+          class="form-control"></textarea>
+
+        <label for="food3-review" class="form-label mt-3">Review</label>
+        <select id="food3-review" name="food3-review" 
+          class="form-select">
+          <option value="0">None</option>
+          <option value="1">1 Star</option>
+          <option value="2">2 Stars</option>
+          <option value="3">3 Stars</option>
+          <option value="4">4 Stars</option>
+          <option value="5">5 Stars</option>
+        </select>
+      </div>
+
+
+      <!-- Buttons -->
+      <div class="d-flex justify-content-between">
+        <button type="submit" class="btn btn-primary w-48">
+          Submit
+        </button>
+        <button type="button" onclick="document.getElementById('contact-form').reset();" 
+          class="btn btn-secondary w-48">
+          Clear
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="successModalLabel">Success</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Your feedback has been submitted successfully!
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Bootstrap JS and dependencies -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    document.getElementById('contact-form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const data = {
+        restaurant_name: document.getElementById('restaurant-name').value,
+        city: document.getElementById('city').value,
+        food_items: [
+          {
+            name: document.getElementById('food1-name').value,
+            comment: document.getElementById('food1-comment').value,
+            review: parseInt(document.getElementById('food1-review').value, 10)
+          }
+        ]
+      };
+
+      try {
+        const response = await fetch('http://127.0.0.1:8000/feedback/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          console.log('Success:', result);
+          // Show success modal
+          const modal = new bootstrap.Modal(document.getElementById('successModal'));
+          modal.show();
+          // Reset the form
+          document.getElementById('contact-form').reset();
+        } else {
+          console.error('Failed to submit feedback:', response.status, response.statusText);
+        }
+      } catch (error) {
+        console.error('Error submitting feedback:', error);
+      }
+    });
+  </script>
+
+</body>
+</html>
