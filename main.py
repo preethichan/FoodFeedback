@@ -83,9 +83,5 @@ async def delete_feedback(feedback_id: str):
     
     raise HTTPException(status_code=404, detail="Feedback not found")
 
-# 5. Get all feedbacks (updated route)
-@app.get("/feedbacks/", response_model=List[RestaurantFeedback])
-async def get_all_feedbacks():
-    feedbacks = feedback_collection.find()
-    return [str_id(feedback) for feedback in feedbacks]
+
 
