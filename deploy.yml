@@ -1,0 +1,47 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main  # Trigger on push to the main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest  # Use the latest Ubuntu runner for CI/CD
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up AWS CLI
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+    
+    - name: SSH to EC2 and Deploy Docker
+      env:
+        PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}  # Store your private SSH key in GitHub Secrets
+        EC2_USER: ubuntu  # Use your EC2 instance user (e.g., ubuntu, ec2-user)
+        EC2_HOST: <your-ec2-public-ip>  # Replace with your EC2 public IP or Elastic IP
+      run: |
+        echo "$PRIVATE_KEY" > private_key.pem
+        chmod 600 private_key.pem
+        ssh -o StrictHostKeyChecking=no -i private_key.pem $EC2_USER@$EC2_HOST << 'EOF'
+          # Navigate to your application directory
+          cd /path/to/your/project
+
+          # Pull the latest code from Git
+          git pull origin main
+
+          # Rebuild the Docker container
+          docker build -t restaurant_feedback .
+
+          # Stop and remove the old container if it exists
+          docker stop restaurant_feedback || true
+          docker rm restaurant_feedback || true
+
+          # Run the new container
+          docker run -d -p 80:80 --name restaurant_feedback restaurant_feedback
+        EOF
